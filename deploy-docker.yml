@@ -20,6 +20,7 @@
         state: started
         enabled: yes
     - name: Install docker-py python module
+      ansible_python_interpreter: /usr/bin/python3
       pip:
         name: docker-py
         state: present
