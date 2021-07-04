@@ -34,7 +34,3 @@
         published_ports:
           - 0.0.0.0:80:80
         restart_policy: always
-        mounts:
-          - source: /var/log/webapp/
-            target: /var/log/apache2/
-            read_only: yes
