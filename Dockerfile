@@ -3,7 +3,6 @@ FROM ubuntu:16.04
 # Install dependencies
 RUN apt-get update
 RUN apt-get -y install apache2
-VOLUME /var/log/apache2
 
 
 # Install apache and write hello world message
