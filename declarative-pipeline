@@ -1,0 +1,43 @@
+pipeline{
+    agent any
+    environment {
+      DOCTAG = getversion()
+    }
+    
+    stages{
+        stage('SCM'){
+            steps{
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/manju1921/apache-jenkins-ansible'
+            }
+        }
+        
+        stage('Docker Build'){
+            steps{
+                sh "docker build . -t manju1921/webapp:${DOCTAG} "
+            }
+        }
+        
+        stage('DockerHub Push'){
+            steps{
+                withCredentials([string(credentialsId: 'Dockerhub', variable: 'Dockerhubpwd')]) {
+                // some block
+                sh "docker login -u manju1921 -p ${Dockerhubpwd}"
+                }
+                sh "docker push manju1921/webapp:${DOCTAG} "
+            }
+        }
+        
+        stage('Ansible Build'){
+            steps{
+                ansiblePlaybook credentialsId: 'webapp-1', disableHostKeyChecking: true, 
+                extras: "-e DOCTAG=${DOCTAG}", installation: 'ansible', inventory: 'dev.inv', 
+                playbook: 'deploy-docker.yml'
+            }
+        }
+    }
+}
+
+def getversion(){
+    def commitversion = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    return commitversion
+}
